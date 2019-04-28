@@ -41,6 +41,8 @@ function makeReleaseCopies( Release ) {
 			// Map files need to reference the new uncompressed name;
 			// assume that all files reside in the same directory.
 			// "file":"jquery.min.js" ... "sources":["jquery.js"]
+			// /[^"]/表示排除 " ,通常情况下，^匹配开头，在[]中表示排除
+			// 这里的意思是file对应的value不能有 "
 			text = fs.readFileSync( builtFile, "utf8" )
 				.replace( /"file":"([^"]+)"/,
 					"\"file\":\"" + unpathedFile.replace( /\.min\.map/, ".min.js\"" ) )

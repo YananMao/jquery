@@ -24,6 +24,20 @@ define( [
 	class2type, toString, hasOwn, fnToString, ObjectFunctionString,
 	support, isFunction, isWindow, DOMEval, toType ) {
 
+// arr：[]
+// document: window.document
+// getProto: Object.getPrototypeOf
+// slice: [].slice
+// concat: [].concat
+// push: [].push
+// indexOf: [].indexOf
+// class2type: {}
+// toString: {}.toString
+// hasOwn: {}.hasOwnProperty
+// fnToString: {}.hasOwnProperty.toString
+// ObjectFunctionString: fnToString.call( Object )
+// support: {}
+
 "use strict";
 
 var
@@ -39,6 +53,14 @@ var
 
 	// Support: Android <=4.0 only
 	// Make sure we trim BOM and NBSP
+	// \s空格
+	// \uFEFF：某些软件，在保存一个以UTF-8编码的文件时，会在文件开始的地方插入三个不可见的字符（0xEF 0xBB 0xBF，即BOM），转码后是\uFEFF，因此在读取时需要自己去掉这些字符
+	// \xA0：禁止自动换行空白符，相当于html中的&nbsp;
+	// +匹配一次或多次
+	// ^匹配开头
+	// $匹配结尾
+	// g匹配全局
+	// 所以这个正则可以匹配开头和结束的bom和nbsp
 	rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
 jQuery.fn = jQuery.prototype = {
@@ -46,12 +68,18 @@ jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
 	jquery: version,
 
+	// 因为这里重写了jQuery的prototype属性,所以默认的constructor属性被覆盖掉,需要重新进行赋值
 	constructor: jQuery,
 
 	// The default length of a jQuery object is 0
 	length: 0,
 
 	toArray: function() {
+
+		// jQuery实例是一个类数组对象,把类数组对象转换为数组
+		// 把类数组对象转换为数组对象的方法:
+		// 1 [].slice.call(array-like-obj)
+		// 2 Array.from(array-like-obj)
 		return slice.call( this );
 	},
 
@@ -61,6 +89,10 @@ jQuery.fn = jQuery.prototype = {
 
 		// Return all the elements in a clean array
 		if ( num == null ) {
+
+			// 如果num没有定义或者不存在,就把当前实例转换为数组返回
+			// 这里有个问题, num==null 的话,num可能有多少种取值
+			// 现在我知道的有 null 和 undefined 这两种情况,不知道其他的情况是怎么样的
 			return slice.call( this );
 		}
 
@@ -84,16 +116,29 @@ jQuery.fn = jQuery.prototype = {
 
 	// Execute a callback for every element in the matched set.
 	each: function( callback ) {
+
+		// 调用jQuery的each方法
+		// each方法返回原数组
 		return jQuery.each( this, callback );
 	},
 
 	map: function( callback ) {
+
+		// 调用jQuery的map方法
+		// map方法返回遍历处理过的数组
+		// 假设原数组是a，map方法返回的数组是b
+		// 这里return b
+		// 并且b.prevObject === a
 		return this.pushStack( jQuery.map( this, function( elem, i ) {
 			return callback.call( elem, i, elem );
 		} ) );
 	},
 
 	slice: function() {
+
+		// slice方法也是返回一个新的数组
+		// 结合上面的map方法来看,如果一个方法返回一个新的数组,
+		// 可以使用pushStack方法返回这个新的数组,并且prevObject属性指向原数组
 		return this.pushStack( slice.apply( this, arguments ) );
 	},
 
@@ -107,6 +152,8 @@ jQuery.fn = jQuery.prototype = {
 
 	eq: function( i ) {
 		var len = this.length,
+
+			// +是将i转换为number类型
 			j = +i + ( i < 0 ? len : 0 );
 		return this.pushStack( j >= 0 && j < len ? [ this[ j ] ] : [] );
 	},
@@ -122,12 +169,17 @@ jQuery.fn = jQuery.prototype = {
 	splice: arr.splice
 };
 
+//对jQuery和jQuery实例的方法进行扩展
 jQuery.extend = jQuery.fn.extend = function() {
 	var options, name, src, copy, copyIsArray, clone,
 		target = arguments[ 0 ] || {},
 		i = 1,
 		length = arguments.length,
 		deep = false;
+
+	// 调用时可能出现的情况
+	// jQuery.extend([deep,]target,object1[,objectN]) 
+	// jQuery.fn.extend(object)
 
 	// Handle a deep copy situation
 	if ( typeof target === "boolean" ) {
@@ -208,6 +260,7 @@ jQuery.extend( {
 
 	noop: function() {},
 
+	// 如果对象是通过{}或者new Object()创建的,返回true
 	isPlainObject: function( obj ) {
 		var proto, Ctor;
 
@@ -249,6 +302,11 @@ jQuery.extend( {
 		if ( isArrayLike( obj ) ) {
 			length = obj.length;
 			for ( ; i < length; i++ ) {
+
+				// jQuery中的each是对for循环进行封装得到的函数,不支持使用break和continue跳出循环
+				// 如何在each中实现break和continue的效果呢?
+				// 从代码里我们也可以看到,如果回调函数返回false,for循环就会break
+				// 如果回调函数 return a(a不是false),这样回调函数就会停止本轮循环往下执行,实际上也就达到了continue的效果
 				if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
 					break;
 				}
@@ -260,7 +318,7 @@ jQuery.extend( {
 				}
 			}
 		}
-
+		// each遍历返回的原遍历对象,这点跟map是不一样的
 		return obj;
 	},
 
@@ -384,6 +442,8 @@ function isArrayLike( obj ) {
 	// `in` check used to prevent JIT error (gh-2145)
 	// hasOwn isn't used here due to false negatives
 	// regarding Nodelist length in IE
+	// 使用!!将obj转换为boolean值
+	// 在获取obj的length属性时,判断obj存在并且有length属性时,才去获取length属性,这样比较严谨
 	var length = !!obj && "length" in obj && obj.length,
 		type = toType( obj );
 
