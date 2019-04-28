@@ -249,6 +249,8 @@ jQuery.extend = jQuery.fn.extend = function() {
 jQuery.extend( {
 
 	// Unique for each copy of jQuery on the page
+	// \d匹配数字, \D匹配非数字,这里可以匹配到version和产生随机数里小数点
+	// 应该是每个copy产生一个独一无二的标识符
 	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
 
 	// Assume jQuery is ready without the ready module
@@ -277,7 +279,7 @@ jQuery.extend( {
 			return true;
 		}
 
-		// Objects with prototype are plain iff they were constructed by a global Object function
+		// Objects with prototype are plain if they were constructed by a global Object function
 		Ctor = hasOwn.call( proto, "constructor" ) && proto.constructor;
 		return typeof Ctor === "function" && fnToString.call( Ctor ) === ObjectFunctionString;
 	},
@@ -300,6 +302,8 @@ jQuery.extend( {
 		var length, i = 0;
 
 		if ( isArrayLike( obj ) ) {
+
+			// isArrayLike会影响到遍历方式
 			length = obj.length;
 			for ( ; i < length; i++ ) {
 
