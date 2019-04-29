@@ -17,6 +17,10 @@ var rootjQuery,
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
 	// Shortcut simple #id case for speed
+	// 正则表达式理解
+	// rquickExpr = /^(?:A|B)$/		//因为在正则表达式里,'|'的优先级最低,所以 \s*(<[\w\W]+>)[^>]* 和 #([\w-]+) 分别作为一个整体运算后再进行或运算
+	// A = \s*(<[\w\W]+>)[^>]*	    //\s 匹配空白字符,等价于[\f\n\r\t\v] 	\w 匹配字母数字下划线,等价于[a-zA-Z0-9_] \W匹配\w的补集,等价于[^a-zA-Z0-9_]
+	// B = #([\w-]+)
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,
 
 	init = jQuery.fn.init = function( selector, context, root ) {
