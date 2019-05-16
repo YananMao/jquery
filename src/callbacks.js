@@ -126,6 +126,7 @@ jQuery.Callbacks = function( options ) {
 					}
 
 					( function add( args ) {
+						// jQuery.each(args,function(index,value){})
 						jQuery.each( args, function( _, arg ) {
 							if ( isFunction( arg ) ) {
 								if ( !options.unique || !self.has( arg ) ) {

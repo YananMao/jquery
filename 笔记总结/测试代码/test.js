@@ -30,3 +30,17 @@
 //   doc.head.appendChild( script ).parentNode.removeChild( script );
 // }
 // DOMEval('console.log("test")')
+var callbacks = $.Callbacks('stopOnFalse');
+var fn1 = function(a){
+  alert(`this is fn1${a}`)
+}
+var fn2 = function(a){
+  alert(`this is fn2${a}`);
+  return false
+
+}
+
+callbacks.add(fn1);
+callbacks.add(fn2);
+callbacks.add(fn1);
+callbacks.fire('hhhhh');

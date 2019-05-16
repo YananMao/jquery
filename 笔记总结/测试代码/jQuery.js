@@ -73,56 +73,56 @@ var support = {};
 
 var isFunction = function isFunction( obj ) {
 
-      // Support: Chrome <=57, Firefox <=52
-      // In some browsers, typeof returns "function" for HTML <object> elements
-      // (i.e., `typeof document.createElement( "object" ) === "function"`).
-      // We don't want to classify *any* DOM node as a function.
-      return typeof obj === "function" && typeof obj.nodeType !== "number";
-  };
+    // Support: Chrome <=57, Firefox <=52
+    // In some browsers, typeof returns "function" for HTML <object> elements
+    // (i.e., `typeof document.createElement( "object" ) === "function"`).
+    // We don't want to classify *any* DOM node as a function.
+    return typeof obj === "function" && typeof obj.nodeType !== "number";
+};
 
 
 var isWindow = function isWindow( obj ) {
-    return obj != null && obj === obj.window;
-  };
+  return obj != null && obj === obj.window;
+};
 
 
 
 
-  var preservedScriptAttributes = {
-    type: true,
-    src: true,
-    nonce: true,
-    noModule: true
-  };
+var preservedScriptAttributes = {
+  type: true,
+  src: true,
+  nonce: true,
+  noModule: true
+};
 
-  function DOMEval( code, node, doc ) {
-    doc = doc || document;
+function DOMEval( code, node, doc ) {
+  doc = doc || document;
 
-    var i, val,
-      script = doc.createElement( "script" );
+  var i, val,
+    script = doc.createElement( "script" );
 
-    script.text = code;
-    if ( node ) {
-      for ( i in preservedScriptAttributes ) {
+  script.text = code;
+  if ( node ) {
+    for ( i in preservedScriptAttributes ) {
 
-        // Support: Firefox 64+, Edge 18+
-        // Some browsers don't support the "nonce" property on scripts.
-        // On the other hand, just using `getAttribute` is not enough as
-        // the `nonce` attribute is reset to an empty string whenever it
-        // becomes browsing-context connected.
-        // See https://github.com/whatwg/html/issues/2369
-        // See https://html.spec.whatwg.org/#nonce-attributes
-        // The `node.getAttribute` check was added for the sake of
-        // `jQuery.globalEval` so that it can fake a nonce-containing node
-        // via an object.
-        val = node[ i ] || node.getAttribute && node.getAttribute( i );
-        if ( val ) {
-          script.setAttribute( i, val );
-        }
+      // Support: Firefox 64+, Edge 18+
+      // Some browsers don't support the "nonce" property on scripts.
+      // On the other hand, just using `getAttribute` is not enough as
+      // the `nonce` attribute is reset to an empty string whenever it
+      // becomes browsing-context connected.
+      // See https://github.com/whatwg/html/issues/2369
+      // See https://html.spec.whatwg.org/#nonce-attributes
+      // The `node.getAttribute` check was added for the sake of
+      // `jQuery.globalEval` so that it can fake a nonce-containing node
+      // via an object.
+      val = node[ i ] || node.getAttribute && node.getAttribute( i );
+      if ( val ) {
+        script.setAttribute( i, val );
       }
     }
-    doc.head.appendChild( script ).parentNode.removeChild( script );
   }
+  doc.head.appendChild( script ).parentNode.removeChild( script );
+}
 
 
 function toType( obj ) {
